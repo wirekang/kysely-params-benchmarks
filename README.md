@@ -160,6 +160,127 @@ Done in 2739.24s.
 * To see which query is used, pass `-q`:  
   `yarn start -q` or `npm start -q`
 
+```
+query-0
+-----------------------------------------------
+select
+  *
+from
+  "person"
+
+
+
+query-1
+-----------------------------------------------
+select
+  *
+from
+  "person"
+where
+  "id" = $1
+
+
+
+query-2
+-----------------------------------------------
+select
+  "user_following"."id",
+  "user_following"."from_user_id",
+  "user_following"."to_user_id",
+  "user_following"."accepted",
+  "user_profile"."nickname",
+  "user_profile"."search_id",
+  "user_profile"."profile_image_url"
+from
+  "user_following"
+  inner join "user_handle" on "user_handle"."id" = "user_following"."to_user_id"
+  inner join "user_profile" on "user_profile"."user_id" = "user_handle"."id"
+where
+  "user_handle"."type" = $1
+  and "user_following"."to_user_id" = $2
+order by
+  "user_following"."accepted" asc,
+  "user_following"."id" desc
+
+
+
+query-3
+-----------------------------------------------
+select
+  "t1"."Trade_Stock",
+  "t1"."TRADE_ID",
+  "t2"."TRADE_ID",
+  "t1"."Trade_Timestamp",
+  "t2"."Trade_Timestamp",
+  "t1"."Price",
+  "t2"."Price",
+  abs("t1"."Price" - "t2"."Price") * 1.0 / "t1"."Price" * $1 as "price_diff_pct"
+from
+  "Trade_tbl" as "t1"
+  inner join "Trade_tbl" as "t2" on "t1"."Trade_Stock" = "t2"."Trade_Stock"
+where
+  (
+    "t1"."Trade_Timestamp" < "t2"."Trade_Timestamp"
+    and datediff (
+      second,
+      "t1"."Trade_Timestamp",
+      "t2"."Trade_Timestamp"
+    ) < $2
+    and abs("t1"."Price" - "t2"."Price") * 1.0 / "t1"."Price" * $3 > $4
+  )
+order by
+  "t1"."TRADE_ID"
+
+
+
+query-4
+-----------------------------------------------
+select
+  "user"."id",
+  "user"."first_name",
+  "user"."last_name",
+  "user"."age",
+  "marriage"."married",
+  "marriage"."married_at",
+  "pet"."name",
+  "pet"."kind",
+  "job"."kind",
+  "employment"."employed_at",
+  "company"."name",
+  "company"."created_at",
+  "country"."id",
+  "country"."code",
+  "country"."population",
+  "country"."population_updated_at",
+  "planet"."id",
+  "planet"."kind"
+from
+  "user"
+  inner join "employment" on "employment"."user_id" = "user"."id"
+  inner join "job" on "job"."id" = "employment"."job_id"
+  inner join "company" on "company"."id" = "employment"."company_id"
+  inner join "country" on "country"."id" = "company"."country_id"
+  inner join "planet" on "planet"."id" = "country"."planet_id"
+  left join "marriage" on "marriage"."user_id" = "user"."id"
+  left join "pet" on "pet"."owner_id" = "user"."id"
+where
+  (
+    "user"."name" like $1
+    and "user"."age" >= $2
+    and "user"."age" <= $3
+    and "marriage"."married" = $4
+    and "pet"."kind" = $5
+    and "job"."kind" = $6
+    and "country"."population" >= $7
+    and "planet"."kind" = $8
+  )
+order by
+  "marriage"."married" desc,
+  "country"."population" asc
+
+```
+
+
 ## Diagram
 
 ```mermaid
