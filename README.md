@@ -1,16 +1,41 @@
 # kysely-params-benchmarks
 
-Memory usage and duration for sql generation: [kysely](https://github.com/kysely-org/kysely) vs [kysely + kysely-params](https://github.com/jtlapp/kysely-params)
+Memory and speed benchmarks: [kysely](https://github.com/kysely-org/kysely) vs [kysely + kysely-params](https://github.com/jtlapp/kysely-params)
 
 Results may vary depending on environment, so please share yours, and I'll update readme.
 
-As you know, v8 engine has garbage collector, so it's hard to measure memory usage accurately.  
-So I set default ROUNDS to high value, and it takes 45 minutes in my environment.  
-If you want to see result quickly, adjust the ROUNDS.
+It takes about an hour to complete, so be patient.  
+(It's hard to measure memory usage in node due to GC)  
+Reduce the `*_ROUNDS` in `src/main.ts` if you want to see the result quickly.
 
-See [Diagram](#diagram) to know how it works.
+See [Diagram](#diagram) to check how it works.
 
 ## Results
+
+### Summary
+
+Average of memory usage in kilobyte
+
+| query | kysely   | kysely-params |
+| ----- | -------  | ------------- |
+| 0     | 0.99     | 0.23          |
+| 1     | 2.05    | 0.48          |
+| 2     | 14.64   | 0.38          |
+| 3     | 12.25    | 0.39          |
+| 4     | 10.92    | 0.56          |
+
+
+Average of time spend in milliseconds
+
+| query | kysely   | kysely-params |
+| ----- | -------  | ------------- |
+| 0     | 0.001     | 0.000          |
+| 1     | 0.002    | 0.000          |
+| 2     | 0.013   | 0.000          |
+| 3     | 0.026    | 0.000          |
+| 4     | 0.038    | 0.000          |
+
+
 
 
 ```
